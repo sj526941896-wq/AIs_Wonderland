@@ -1,4 +1,4 @@
-import { loadEntries, escapeHtml, formatDate } from './storage.js';
+import { loadEntries, escapeHtml, formatDate, loadProfile } from './storage.js';
 
 function renderEntries(searchTerm = '') {
   const entries = loadEntries();
@@ -77,6 +77,10 @@ function renderEntries(searchTerm = '') {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const profile = loadProfile();
+  document.getElementById('profileName').textContent = profile.name;
+  document.getElementById('profileBio').textContent = profile.bio;
+
   renderEntries();
 
   document.getElementById('searchInput').addEventListener('input', (e) => {

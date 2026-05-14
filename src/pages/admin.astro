@@ -53,6 +53,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </form>
       </section>
 
+      <section class="input-section">
+        <h2>个人简介</h2>
+        <form id="profileForm">
+          <div class="form-group">
+            <label for="profileNameInput">名称</label>
+            <input type="text" id="profileNameInput" placeholder="你的名字">
+          </div>
+          <div class="form-group">
+            <label for="profileBioInput">简介</label>
+            <textarea id="profileBioInput" placeholder="介绍一下自己..." rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">保存简介</button>
+        </form>
+      </section>
+
       <section>
         <h2 class="section-title">已有记录</h2>
         <div class="entry-list" id="entryList"></div>

@@ -1,4 +1,4 @@
-import { loadEntries, saveEntries, generateId, escapeHtml, formatDate } from './storage.js';
+import { loadEntries, saveEntries, generateId, escapeHtml, formatDate, loadProfile, saveProfile } from './storage.js';
 
 const ADMIN_PASSWORD = 'aitennis2026';
 let currentTags = [];
@@ -83,6 +83,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('date').value = today;
+
+  /* --- Profile form --- */
+  const profile = loadProfile();
+  document.getElementById('profileNameInput').value = profile.name;
+  document.getElementById('profileBioInput').value = profile.bio;
+
+  document.getElementById('profileForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    saveProfile({
+      name: document.getElementById('profileNameInput').value,
+      bio: document.getElementById('profileBioInput').value,
+    });
+    alert('简介已保存');
+  });
 
   /* --- Form submit --- */
   document.getElementById('entryForm').addEventListener('submit', (e) => {
