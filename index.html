@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Learning Journey - 我的 AI 学习之旅</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --accent: #22d3ee;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .input-section {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+    }
+
+    .input-section h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .tags-input {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 42px;
+    }
+
+    .tag {
+      background: var(--primary);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tag-remove {
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    .tag-remove:hover {
+      opacity: 1;
+    }
+
+    .tags-input input {
+      border: none;
+      background: transparent;
+      padding: 0.25rem;
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .tags-input input:focus {
+      outline: none;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .search-bar {
+      margin-bottom: 2rem;
+    }
+
+    .search-bar input {
+      font-size: 1.1rem;
+      padding: 1rem;
+    }
+
+    .filter-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-tag {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .filter-tag:hover, .filter-tag.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 2rem;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--primary), var(--accent));
+    }
+
+    .entry {
+      position: relative;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .entry::before {
+      content: '';
+      position: absolute;
+      left: -2rem;
+      top: 1.5rem;
+      width: 12px;
+      height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      border: 3px solid var(--bg);
+    }
+
+    .entry-date {
+      color: var(--accent);
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .entry-title {
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .entry-content {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      white-space: pre-wrap;
+    }
+
+    .entry-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .entry-tag {
+      background: var(--bg);
+      color: var(--primary);
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+    }
+
+    .entry-achievement {
+      background: rgba(34, 211, 238, 0.1);
+      border-left: 3px solid var(--accent);
+      padding: 0.75rem 1rem;
+      border-radius: 0 8px 8px 0;
+      margin-top: 1rem;
+    }
+
+    .entry-achievement strong {
+      color: var(--accent);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .entry-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AI Learning Journey</h1>
+      <p class="subtitle">记录我的 AI 学习之旅</p>
+    </header>
+
+    <section class="input-section">
+      <h2>添加新的学习记录</h2>
+      <form id="entryForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="date">日期</label>
+            <input type="date" id="date" required>
+          </div>
+          <div class="form-group">
+            <label for="title">标题</label>
+            <input type="text" id="title" placeholder="今天学了什么？" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="content">学习内容</label>
+          <textarea id="content" placeholder="详细记录今天学习的内容..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="tags">标签 (输入后按回车添加)</label>
+          <div class="tags-input" id="tagsContainer">
+            <input type="text" id="tagInput" placeholder="添加标签...">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="achievement">成果/心得</label>
+          <textarea id="achievement" placeholder="今天的收获和成果..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">保存记录</button>
+      </form>
+    </section>
+
+    <section class="search-bar">
+      <input type="text" id="searchInput" placeholder="搜索学习记录...">
+    </section>
+
+    <section>
+      <div class="filter-tags" id="filterTags"></div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'ai_learning_journey';
+
+    let entries = [];
+    let currentTags = [];
+
+    function loadEntries() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      entries = stored ? JSON.parse(stored) : [];
+    }
+
+    function saveEntries() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    }
+
+    function renderEntries(filterTag = null, searchTerm = '') {
+      const timeline = document.getElementById('timeline');
+      const filterTagsContainer = document.getElementById('filterTags');
+
+      let filtered = entries;
+      if (filterTag) {
+        filtered = filtered.filter(e => e.tags.includes(filterTag));
+      }
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filtered = filtered.filter(e =>
+          e.title.toLowerCase().includes(term) ||
+          e.content.toLowerCase().includes(term) ||
+          e.achievement.toLowerCase().includes(term) ||
+          e.tags.some(t => t.toLowerCase().includes(term))
+        );
+      }
+
+      filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      if (filtered.length === 0) {
+        timeline.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <p>还没有学习记录</p>
+            <p>开始记录你的 AI 学习之旅吧！</p>
+          </div>
+        `;
+        return;
+      }
+
+      timeline.innerHTML = filtered.map(entry => `
+        <div class="entry">
+          <div class="entry-date">${formatDate(entry.date)}</div>
+          <h3 class="entry-title">${escapeHtml(entry.title)}</h3>
+          ${entry.content ? `<p class="entry-content">${escapeHtml(entry.content)}</p>` : ''}
+          ${entry.tags.length ? `
+            <div class="entry-tags">
+              ${entry.tags.map(t => `<span class="entry-tag">${escapeHtml(t)}</span>`).join('')}
+            </div>
+          ` : ''}
+          ${entry.achievement ? `
+            <div class="entry-achievement">
+              <strong>成果/心得</strong>
+              ${escapeHtml(entry.achievement)}
+            </div>
+          ` : ''}
+          <div class="entry-actions">
+            <button class="btn btn-sm btn-danger" onclick="deleteEntry('${entry.id}')">删除</button>
+          </div>
+        </div>
+      `).join('');
+
+      const allTags = [...new Set(entries.flatMap(e => e.tags))];
+      filterTagsContainer.innerHTML = `
+        <span class="filter-tag ${filterTag === null ? 'active' : ''}" onclick="setFilter(null)">全部</span>
+        ${allTags.map(tag => `
+          <span class="filter-tag ${filterTag === tag ? 'active' : ''}" onclick="setFilter('${escapeHtml(tag)}')">${escapeHtml(tag)}</span>
+        `).join('')}
+      `;
+    }
+
+    function setFilter(tag) {
+      const searchTerm = document.getElementById('searchInput').value;
+      renderEntries(tag, searchTerm);
+    }
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    function addTag(tag) {
+      tag = tag.trim();
+      if (tag && !currentTags.includes(tag)) {
+        currentTags.push(tag);
+        renderTagsInput();
+      }
+    }
+
+    function removeTag(tag) {
+      currentTags = currentTags.filter(t => t !== tag);
+      renderTagsInput();
+    }
+
+    function renderTagsInput() {
+      const container = document.getElementById('tagsContainer');
+      const input = document.getElementById('tagInput');
+      container.innerHTML = currentTags.map(tag => `
+        <span class="tag">
+          ${escapeHtml(tag)}
+          <span class="tag-remove" onclick="removeTag('${escapeHtml(tag)}')">&times;</span>
+        </span>
+      `).join('') + '<input type="text" id="tagInput" placeholder="添加标签...">';
+      document.getElementById('tagInput').focus();
+    }
+
+    function deleteEntry(id) {
+      if (confirm('确定要删除这条记录吗？')) {
+        entries = entries.filter(e => e.id !== id);
+        saveEntries();
+        renderEntries();
+      }
+    }
+
+    document.getElementById('entryForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const entry = {
+        id: generateId(),
+        date: document.getElementById('date').value,
+        title: document.getElementById('title').value,
+        content: document.getElementById('content').value,
+        tags: [...currentTags],
+        achievement: document.getElementById('achievement').value
+      };
+
+      entries.push(entry);
+      saveEntries();
+
+      this.reset();
+      currentTags = [];
+      renderTagsInput();
+      renderEntries();
+
+      document.getElementById('date').value = new Date().toISOString().split('T')[0];
+    });
+
+    document.getElementById('tagsContainer').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addTag(e.target.value);
+        e.target.value = '';
+      }
+    });
+
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      const filterTag = document.querySelector('.filter-tag.active')?.textContent === '全部' ? null : document.querySelector('.filter-tag.active')?.textContent;
+      renderEntries(filterTag, e.target.value);
+    });
+
+    loadEntries();
+    renderEntries();
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+  </script>
+</body>
+</html>
