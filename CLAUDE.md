@@ -12,9 +12,34 @@ Under development. Implementation started on 2026/05/14.
 
 ## Tech Stack
 
-- **Frontend**: Static HTML/CSS/JS (single page application)
+- **Frontend**: Astro (static site generator, component-based)
 - **Data Storage**: localStorage (client-side only)
-- **Deployment**: Static hosting for domain ais.aitennis.top
+- **Deployment**: Static hosting for domain ais.aitennis.top (GitHub Pages)
+
+## Project Structure
+
+```
+src/
+├── pages/
+│   ├── index.astro       — Homepage (timeline, search, filter)
+│   └── admin.astro       — Admin page (password gate, CRUD form)
+├── layouts/
+│   └── BaseLayout.astro  — Shared HTML shell (global reset, container)
+├── scripts/
+│   ├── storage.js        — localStorage CRUD utilities
+│   ├── index.js          — Index page rendering & interaction
+│   └── admin.js          — Admin page logic (form, tags, delete)
+public/
+├── CNAME                 — Custom domain for GitHub Pages
+```
+
+## Commands
+
+```bash
+npm run dev        # Start dev server (http://localhost:4321)
+npm run build      # Build to dist/
+npm run preview    # Preview built site
+```
 
 ## Features
 

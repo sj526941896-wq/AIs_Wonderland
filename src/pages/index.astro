@@ -1,0 +1,298 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="AI 学习之旅 | 个人博客">
+  <div class="container">
+    <header class="profile">
+      <div class="avatar">📖</div>
+      <h1>我的 AI 学习之旅</h1>
+      <p class="profile-desc">记录成长的每一步，从基础到实践，持续探索人工智能的奥秘</p>
+      <a href="/admin/" class="admin-link">管理后台</a>
+    </header>
+
+    <section class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" class="search-input" placeholder="搜索学习记录...">
+    </section>
+
+    <section>
+      <div class="filter-tags" id="filterTags"></div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+
+    <footer class="footer">
+      <p>用心记录每一天的成长 🌱</p>
+    </footer>
+  </div>
+</BaseLayout>
+
+<script>
+  import '../scripts/index.js';
+</script>
+
+<style is:global>
+  body {
+    --bg: #faf9f7;
+    --card-bg: #ffffff;
+    --text: #2d2a26;
+    --text-muted: #6b6560;
+    --border: #e8e4df;
+    --accent: #e07a5f;
+    --accent-hover: #c9694f;
+    --tag-bg: #f3ebe6;
+    --tag-text: #b85c3f;
+
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  /* --- Profile / Header --- */
+  .profile {
+    padding: 4rem 0 3rem;
+    text-align: center;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #f4a261);
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+  }
+
+  .profile h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .profile-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .admin-link {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    transition: all 0.2s;
+  }
+  .admin-link:hover {
+    background: var(--accent);
+    color: white;
+  }
+
+  /* --- Search --- */
+  .search-wrap {
+    position: relative;
+    margin-bottom: 2.5rem;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 1.1rem;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.9rem 1rem 0.9rem 2.75rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 1rem;
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .search-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 2px 12px rgba(224, 122, 95, 0.1);
+  }
+
+  /* --- Filter Tags --- */
+  .filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .filter-tag {
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    padding: 0.35rem 0.9rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+  .filter-tag:hover,
+  .filter-tag.active {
+    background: var(--accent);
+    color: white;
+  }
+
+  /* --- Timeline --- */
+  .timeline {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .entry {
+    position: relative;
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .entry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+  .entry::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 2rem;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    border: 3px solid var(--bg);
+  }
+
+  .entry-date {
+    font-size: 0.85rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .entry-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .entry-content {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+  }
+
+  .entry-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .entry-tag {
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+  }
+
+  .entry-achievement {
+    background: linear-gradient(135deg, #fdf8f6, #faf5f2);
+    border-left: 3px solid var(--accent);
+    padding: 0.9rem 1.1rem;
+    border-radius: 0 10px 10px 0;
+    margin-top: 1rem;
+  }
+
+  .entry-achievement-label {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .entry-achievement-content {
+    color: var(--text);
+    font-size: 0.95rem;
+    white-space: pre-wrap;
+  }
+
+  /* --- Empty State --- */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+  }
+  .empty-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+  .empty-state p {
+    font-size: 1rem;
+  }
+  .empty-state p:first-of-type {
+    margin-bottom: 0.5rem;
+  }
+
+  /* --- Footer --- */
+  .footer {
+    text-align: center;
+    padding: 3rem 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 600px) {
+    .profile {
+      padding: 3rem 0 2rem;
+    }
+    .profile h1 {
+      font-size: 1.5rem;
+    }
+    .entry {
+      padding: 1.25rem;
+    }
+    .entry-title {
+      font-size: 1.1rem;
+    }
+  }
+</style>
