@@ -1,13 +1,26 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import profile from '../content/profile.json';
+
+const entries = await getCollection('entries');
+const published = entries
+  .filter((e) => !e.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const allTags = [...new Set(published.flatMap((e) => e.data.tags))];
+
+function fmtDate(date) {
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+}
 ---
 
 <BaseLayout title="AI 学习之旅 | 个人博客">
   <div class="container">
     <header class="profile">
       <div class="avatar">📖</div>
-      <h1 id="profileName">我的 AI 学习之旅</h1>
-      <p class="profile-desc" id="profileBio">记录成长的每一步，从基础到实践，持续探索人工智能的奥秘</p>
+      <h1 id="profileName">{profile.name}</h1>
+      <p class="profile-desc" id="profileBio">{profile.bio}</p>
       <a href="/admin/" class="admin-link">管理后台</a>
     </header>
 
@@ -17,8 +30,52 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </section>
 
     <section>
-      <div class="filter-tags" id="filterTags"></div>
-      <div class="timeline" id="timeline"></div>
+      <div class="filter-tags" id="filterTags">
+        <button class="filter-tag active" data-tag="">全部</button>
+        {allTags.map((tag) => (
+          <button class="filter-tag" data-tag={tag}>{tag}</button>
+        ))}
+      </div>
+
+      <div class="timeline" id="timeline">
+        {
+          published.length === 0 ? (
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <p>还没有学习记录</p>
+              <p>期待与你分享第一篇内容</p>
+            </div>
+          ) : (
+            published.map(async (entry, i) => {
+              const { Content } = await entry.render();
+              return (
+                <article class="entry" data-index={i} data-title={entry.data.title} data-tags={entry.data.tags.join(',')}>
+                  <div class="entry-date">{fmtDate(entry.data.date)}</div>
+                  <h2 class="entry-title">{entry.data.title}</h2>
+                  <div class="entry-content md-body"><Content /></div>
+                  {
+                    entry.data.tags.length > 0 && (
+                      <div class="entry-tags">
+                        {entry.data.tags.map((tag) => (
+                          <span class="entry-tag">{tag}</span>
+                        ))}
+                      </div>
+                    )
+                  }
+                  {
+                    entry.data.achievement && (
+                      <div class="entry-achievement">
+                        <div class="entry-achievement-label">✨ 成果与收获</div>
+                        <div class="entry-achievement-content">{entry.data.achievement}</div>
+                      </div>
+                    )
+                  }
+                </article>
+              );
+            })
+          )
+        }
+      </div>
     </section>
 
     <footer class="footer">
@@ -47,7 +104,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     color: var(--text);
   }
 
-  /* --- Profile / Header --- */
   .profile {
     padding: 4rem 0 3rem;
     text-align: center;
@@ -96,7 +152,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     color: white;
   }
 
-  /* --- Search --- */
   .search-wrap {
     position: relative;
     margin-bottom: 2.5rem;
@@ -127,7 +182,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     box-shadow: 0 2px 12px rgba(224, 122, 95, 0.1);
   }
 
-  /* --- Filter Tags --- */
   .filter-tags {
     display: flex;
     flex-wrap: wrap;
@@ -151,7 +205,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     color: white;
   }
 
-  /* --- Timeline --- */
   .timeline {
     position: relative;
     padding-left: 1.5rem;
@@ -210,7 +263,32 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     color: var(--text-muted);
     font-size: 0.95rem;
     margin-bottom: 1rem;
-    white-space: pre-wrap;
+  }
+
+  .md-body p {
+    margin-bottom: 0.75rem;
+  }
+  .md-body ul,
+  .md-body ol {
+    margin-left: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .md-body li {
+    margin-bottom: 0.25rem;
+  }
+  .md-body strong {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .md-body code {
+    background: var(--tag-bg);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  .md-body pre code {
+    background: none;
+    padding: 0;
   }
 
   .entry-tags {
@@ -252,7 +330,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     white-space: pre-wrap;
   }
 
-  /* --- Empty State --- */
   .empty-state {
     text-align: center;
     padding: 4rem 2rem;
@@ -270,7 +347,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     margin-bottom: 0.5rem;
   }
 
-  /* --- Footer --- */
+  .empty-search {
+    display: none;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+  }
+  .empty-search.visible {
+    display: block;
+  }
+
   .footer {
     text-align: center;
     padding: 3rem 0;
@@ -280,19 +366,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     margin-top: 2rem;
   }
 
-  /* --- Responsive --- */
   @media (max-width: 600px) {
-    .profile {
-      padding: 3rem 0 2rem;
-    }
-    .profile h1 {
-      font-size: 1.5rem;
-    }
-    .entry {
-      padding: 1.25rem;
-    }
-    .entry-title {
-      font-size: 1.1rem;
-    }
+    .profile { padding: 3rem 0 2rem; }
+    .profile h1 { font-size: 1.5rem; }
+    .entry { padding: 1.25rem; }
+    .entry-title { font-size: 1.1rem; }
   }
 </style>

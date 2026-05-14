@@ -1,70 +1,9 @@
-import { loadEntries, saveEntries, generateId, escapeHtml, formatDate, loadProfile, saveProfile } from './storage.js';
-
 const ADMIN_PASSWORD = 'aitennis2026';
-let currentTags = [];
 
-function renderEntries() {
-  const list = document.getElementById('entryList');
-  const entries = loadEntries();
-
-  if (entries.length === 0) {
-    list.innerHTML = '<div class="empty-state">还没有记录，添加你的第一条学习记录吧！</div>';
-    return;
-  }
-
-  entries.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-  list.innerHTML = entries
-    .map(
-      (entry) => `
-    <div class="entry-item">
-      <div class="entry-info">
-        <div class="entry-info-date">${formatDate(entry.date)}</div>
-        <div class="entry-info-title">${escapeHtml(entry.title)}</div>
-        ${
-          entry.tags.length
-            ? `<div class="entry-info-tags">${entry.tags
-                .map((t) => `<span class="entry-info-tag">${escapeHtml(t)}</span>`)
-                .join('')}</div>`
-            : ''
-        }
-      </div>
-      <div class="entry-actions">
-        <button class="btn btn-sm btn-danger" data-entry-id="${entry.id}">删除</button>
-      </div>
-    </div>
-  `
-    )
-    .join('');
-}
-
-function addTag(tag) {
-  tag = tag.trim();
-  if (tag && !currentTags.includes(tag)) {
-    currentTags.push(tag);
-    renderTagsInput();
-  }
-}
-
-function removeTag(tag) {
-  currentTags = currentTags.filter((t) => t !== tag);
-  renderTagsInput();
-}
-
-function renderTagsInput() {
-  const container = document.getElementById('tagsContainer');
-  container.innerHTML =
-    currentTags
-      .map(
-        (tag) => `
-    <span class="tag">
-      ${escapeHtml(tag)}
-      <span class="tag-remove" data-tag="${escapeHtml(tag)}">&times;</span>
-    </span>
-  `
-      )
-      .join('') + '<input type="text" id="tagInput" placeholder="添加标签...">';
-  document.getElementById('tagInput').focus();
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 function checkPassword() {
@@ -79,74 +18,74 @@ function checkPassword() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderEntries();
-
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('date').value = today;
 
-  /* --- Profile form --- */
-  const profile = loadProfile();
-  document.getElementById('profileNameInput').value = profile.name;
-  document.getElementById('profileBioInput').value = profile.bio;
-
-  document.getElementById('profileForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    saveProfile({
-      name: document.getElementById('profileNameInput').value,
-      bio: document.getElementById('profileBioInput').value,
-    });
-    alert('简介已保存');
-  });
-
-  /* --- Form submit --- */
-  document.getElementById('entryForm').addEventListener('submit', (e) => {
+  /* --- Markdown generator --- */
+  document.getElementById('mdForm').addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const entry = {
-      id: generateId(),
-      date: document.getElementById('date').value,
-      title: document.getElementById('title').value,
-      content: document.getElementById('content').value,
-      tags: [...currentTags],
-      achievement: document.getElementById('achievement').value,
-    };
+    const date = document.getElementById('date').value;
+    const title = document.getElementById('title').value;
+    const tagsRaw = document.getElementById('tags').value;
+    const achievement = document.getElementById('achievement').value;
+    const content = document.getElementById('content').value;
 
-    const entries = loadEntries();
-    entries.push(entry);
-    saveEntries(entries);
+    const tags = tagsRaw
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean);
 
-    e.target.reset();
-    currentTags = [];
-    renderTagsInput();
-    renderEntries();
-    document.getElementById('date').value = today;
+    const slug = date + '-' + title.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-').replace(/^-|-$/g, '');
+    const filename = slug + '.md';
+
+    let md = '---\n';
+    md += `title: ${title}\n`;
+    md += `date: ${date}\n`;
+    if (tags.length > 0) {
+      md += 'tags:\n';
+      tags.forEach((t) => { md += `  - ${t}\n`; });
+    }
+    if (achievement) {
+      md += `achievement: ${achievement}\n`;
+    }
+    md += '---\n\n';
+    md += content;
+
+    document.getElementById('mdOutput').textContent = md;
+    document.getElementById('outputSection').style.display = 'block';
+    document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
   });
 
-  /* --- Tag input --- */
-  document.getElementById('tagsContainer').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addTag(e.target.value);
-      e.target.value = '';
+  /* --- Copy to clipboard --- */
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    const text = document.getElementById('mdOutput').textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('已复制到剪贴板');
+    } catch {
+      /* fallback */
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('已复制到剪贴板');
     }
   });
 
-  /* --- Tag remove (delegated) --- */
-  document.getElementById('tagsContainer').addEventListener('click', (e) => {
-    if (e.target.classList.contains('tag-remove')) {
-      removeTag(e.target.dataset.tag);
+  function showToast(msg) {
+    let toast = document.querySelector('.copied-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'copied-toast';
+      document.body.appendChild(toast);
     }
-  });
-
-  /* --- Entry delete (delegated) --- */
-  document.getElementById('entryList').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-entry-id]');
-    if (btn && confirm('确定要删除这条记录吗？')) {
-      const entries = loadEntries();
-      saveEntries(entries.filter((entry) => entry.id !== btn.dataset.entryId));
-      renderEntries();
-    }
-  });
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
 
   /* --- Password gate --- */
   document.getElementById('passwordBtn').addEventListener('click', checkPassword);
