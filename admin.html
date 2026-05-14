@@ -26,7 +26,73 @@
       line-height: 1.6;
     }
 
+    /* Password Gate */
+    .password-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .password-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: center;
+      max-width: 360px;
+      width: 90%;
+    }
+    .password-box h2 {
+      color: var(--text);
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+    .password-box p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    .password-box input {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 1rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .password-box input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .password-error {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .password-box button {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .password-box button:hover {
+      background: var(--primary-dark);
+    }
+
     .container { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+
+    .admin-content { display: none; }
 
     header { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
 
@@ -147,7 +213,17 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="password-overlay" id="passwordOverlay">
+    <div class="password-box">
+      <h2>管理后台</h2>
+      <p>请输入访问密码</p>
+      <input type="password" id="passwordInput" placeholder="输入密码...">
+      <div class="password-error" id="passwordError">密码错误，请重试</div>
+      <button onclick="checkPassword()">进入</button>
+    </div>
+  </div>
+
+  <div class="admin-content" id="adminContent">
     <header>
       <h1>管理学习记录</h1>
       <a href="index.html" class="back-link">← 返回首页</a>
@@ -191,6 +267,7 @@
   </div>
 
   <script>
+    const ADMIN_PASSWORD = 'aitennis2026';
     const STORAGE_KEY = 'ai_learning_journey';
 
     let entries = [];
@@ -311,6 +388,21 @@
     loadEntries();
     renderEntries();
     document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+    function checkPassword() {
+      const input = document.getElementById('passwordInput').value;
+      if (input === ADMIN_PASSWORD) {
+        document.getElementById('passwordOverlay').style.display = 'none';
+        document.getElementById('adminContent').style.display = 'block';
+      } else {
+        document.getElementById('passwordError').style.display = 'block';
+        document.getElementById('passwordInput').value = '';
+      }
+    }
+
+    document.getElementById('passwordInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') checkPassword();
+    });
   </script>
 </body>
 </html>
