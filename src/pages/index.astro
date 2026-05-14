@@ -6,7 +6,10 @@ import profile from '../content/profile.json';
 const entries = await getCollection('entries');
 const published = entries
   .filter((e) => !e.data.draft)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+  .sort((a, b) => {
+    const d = b.data.date.valueOf() - a.data.date.valueOf();
+    return d !== 0 ? d : b.id.localeCompare(a.id);
+  });
 
 const allTags = [...new Set(published.flatMap((e) => e.data.tags))];
 
