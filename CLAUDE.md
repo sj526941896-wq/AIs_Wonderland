@@ -20,17 +20,16 @@ Under development. Implementation started on 2026/05/14.
 
 ```
 src/
+├── content/
+│   ├── config.ts                    — Content collection schema
+│   ├── entries/                     — Markdown articles (.md)
+│   └── profile.json                 — Personal profile (name, bio)
 ├── pages/
-│   ├── index.astro       — Homepage (timeline, search, filter)
-│   └── admin.astro       — Admin page (password gate, CRUD form)
+│   └── index.astro                  — Homepage (timeline, search, filter)
 ├── layouts/
-│   └── BaseLayout.astro  — Shared HTML shell (global reset, container)
+│   └── BaseLayout.astro             — Shared HTML shell
 ├── scripts/
-│   ├── storage.js        — localStorage CRUD utilities
-│   ├── index.js          — Index page rendering & interaction
-│   └── admin.js          — Admin page logic (form, tags, delete)
-public/
-├── CNAME                 — Custom domain for GitHub Pages
+│   └── index.js                     — Search/filter client-side logic
 ```
 
 ## Commands
@@ -40,6 +39,13 @@ npm run dev        # Start dev server (http://localhost:4321)
 npm run build      # Build to dist/
 npm run preview    # Preview built site
 ```
+
+## How to Add an Entry
+
+1. Create a `.md` file in `src/content/entries/`
+2. Add frontmatter (title, date, tags, achievement)
+3. Write the body in Markdown
+4. Commit and push — GitHub Actions deploys automatically
 
 ## Features
 

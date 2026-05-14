@@ -21,7 +21,6 @@ function fmtDate(date) {
       <div class="avatar">📖</div>
       <h1 id="profileName">{profile.name}</h1>
       <p class="profile-desc" id="profileBio">{profile.bio}</p>
-      <a href="/admin/" class="admin-link">管理后台</a>
     </header>
 
     <section class="search-wrap">
@@ -134,22 +133,6 @@ function fmtDate(date) {
     font-size: 0.95rem;
     max-width: 480px;
     margin: 0 auto;
-  }
-
-  .admin-link {
-    display: inline-block;
-    margin-top: 1.5rem;
-    color: var(--accent);
-    text-decoration: none;
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--accent);
-    border-radius: 20px;
-    transition: all 0.2s;
-  }
-  .admin-link:hover {
-    background: var(--accent);
-    color: white;
   }
 
   .search-wrap {

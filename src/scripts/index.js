@@ -1,13 +1,4 @@
-import { loadProfile } from './storage.js';
-
 document.addEventListener('DOMContentLoaded', () => {
-  /* --- Profile fallback --- */
-  const profile = loadProfile();
-  const nameEl = document.getElementById('profileName');
-  const bioEl = document.getElementById('profileBio');
-  if (nameEl) nameEl.textContent = profile.name;
-  if (bioEl) bioEl.textContent = profile.bio;
-
   const timeline = document.getElementById('timeline');
   const entries = timeline ? Array.from(timeline.querySelectorAll('.entry')) : [];
 
@@ -55,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    /* toggle empty-search element */
     let empty = document.querySelector('.empty-search');
     if (!empty) {
       empty = document.createElement('div');
