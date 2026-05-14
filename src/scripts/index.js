@@ -2,6 +2,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const timeline = document.getElementById('timeline');
   const entries = timeline ? Array.from(timeline.querySelectorAll('.entry')) : [];
 
+  /* --- Expand / Collapse --- */
+  if (timeline) {
+    timeline.addEventListener('click', (e) => {
+      const header = e.target.closest('.entry-header');
+      if (!header) return;
+      const entry = header.closest('.entry');
+      if (!entry) return;
+      const expanded = entry.classList.toggle('expanded');
+      const toggle = entry.querySelector('.entry-toggle');
+      if (toggle) toggle.textContent = expanded ? '收起' : '展开';
+    });
+  }
+
   /* --- Search --- */
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
