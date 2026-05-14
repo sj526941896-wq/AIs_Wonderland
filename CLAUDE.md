@@ -14,7 +14,7 @@ Under development. Implementation started on 2026/05/14.
 
 - **Frontend**: Static HTML/CSS/JS (single page application)
 - **Data Storage**: localStorage (client-side only)
-- **Deployment**: Static hosting for domain aitennis.top
+- **Deployment**: Static hosting for domain ais.aitennis.top
 
 ## Features
 
