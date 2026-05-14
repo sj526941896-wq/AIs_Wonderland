@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function filter(term) {
     const activeTag = filterTags ? filterTags.querySelector('.filter-tag.active') : null;
     const tag = activeTag ? activeTag.dataset.tag : '';
+    const tagLower = tag.toLowerCase();
     const q = term ? term.toLowerCase() : '';
     let visibleCount = 0;
 
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tags.includes(q) ||
         text.includes(q);
 
-      const matchTag = !tag || tags.split(',').some((t) => t.trim() === tag);
+      const matchTag = !tagLower || tags.split(',').some((t) => t.trim() === tagLower);
 
       if (matchSearch && matchTag) {
         entry.style.display = '';
