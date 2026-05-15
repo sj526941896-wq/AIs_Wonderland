@@ -24,6 +24,10 @@ function fmtDate(date) {
       <div class="avatar">📖</div>
       <h1 id="profileName">{profile.name}</h1>
       <p class="profile-desc" id="profileBio">{profile.bio}</p>
+      <div class="qr-section">
+        <img src="/images/feishu-me.png" alt="飞书二维码" class="qr-code">
+        <p class="qr-label">扫码联系我</p>
+      </div>
     </header>
 
     <section class="search-wrap">
@@ -141,6 +145,33 @@ function fmtDate(date) {
     font-size: 0.95rem;
     max-width: 480px;
     margin: 0 auto;
+  }
+
+  .qr-section {
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .qr-code {
+    width: 140px;
+    height: 140px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    padding: 4px;
+    background: white;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .qr-code:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+
+  .qr-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
   }
 
   .search-wrap {
