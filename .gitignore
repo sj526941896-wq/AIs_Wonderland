@@ -4,3 +4,4 @@ dist/
 .obsidian/
 .DS_Store
 *.local
+src/content/entries/template/
