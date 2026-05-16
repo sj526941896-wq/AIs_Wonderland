@@ -1,0 +1,426 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const logs = await getCollection('logs');
+const published = logs
+  .filter((e) => !e.data.draft)
+  .sort((a, b) => {
+    const d = b.data.date.valueOf() - a.data.date.valueOf();
+    return d !== 0 ? d : b.id.localeCompare(a.id);
+  });
+
+const allTags = [...new Set(published.flatMap((e) => e.data.tags))];
+
+const statusLabel = { resolved: '已解决', 'in-progress': '处理中', open: '待处理' };
+const severityLabel = { high: '严重', medium: '中等', low: '轻微' };
+
+function fmtDate(date) {
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+---
+
+<BaseLayout title="日志跟踪 | AI 学习之旅" currentPage="logs">
+  <div class="container">
+    <header class="page-header">
+      <h1>🔧 日志跟踪</h1>
+      <p class="page-desc">记录每次遇到的问题与解决方案，积累经验防重蹈覆辙</p>
+    </header>
+
+    <section class="stats-bar">
+      <div class="stat">
+        <span class="stat-num">{published.length}</span>
+        <span class="stat-label">总日志</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">{published.filter(e => e.data.status === 'resolved').length}</span>
+        <span class="stat-label">已解决</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">{published.filter(e => e.data.status === 'in-progress').length}</span>
+        <span class="stat-label">处理中</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">{published.filter(e => e.data.status === 'open').length}</span>
+        <span class="stat-label">待处理</span>
+      </div>
+    </section>
+
+    <section class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="logSearch" class="search-input" placeholder="搜索问题/标签...">
+    </section>
+
+    <section>
+      <div class="filter-bar" id="logFilters">
+        <div class="filter-group">
+          <span class="filter-label">状态</span>
+          <button class="filter-btn active" data-filter="status" data-value="">全部</button>
+          {Object.entries(statusLabel).map(([key, label]) => (
+            <button class="filter-btn" data-filter="status" data-value={key}>{label}</button>
+          ))}
+        </div>
+        {allTags.length > 0 && (
+          <div class="filter-group">
+            <span class="filter-label">标签</span>
+            <button class="filter-btn active" data-filter="tag" data-value="">全部</button>
+            {allTags.map((tag) => (
+              <button class="filter-btn" data-filter="tag" data-value={tag}>{tag}</button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div class="log-list" id="logList">
+        {
+          published.length === 0 ? (
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <p>还没有日志记录</p>
+              <p>开始记录遇到的第一个问题吧</p>
+            </div>
+          ) : (
+            published.map(async (log, i) => {
+              const { Content } = await log.render();
+              return (
+                <article
+                  class="log-entry"
+                  data-index={i}
+                  data-title={log.data.title}
+                  data-status={log.data.status}
+                  data-tags={log.data.tags.join(',')}
+                  data-severity={log.data.severity}
+                >
+                  <div class="log-header">
+                    <div class="log-meta-top">
+                      <span class={`log-status status-${log.data.status}`}>
+                        {statusLabel[log.data.status]}
+                      </span>
+                      <span class={`log-severity severity-${log.data.severity}`}>
+                        {severityLabel[log.data.severity]}
+                      </span>
+                      <span class="log-date">{fmtDate(log.data.date)}</span>
+                      <span class="log-toggle">展开</span>
+                    </div>
+                    <h2 class="log-title">{log.data.title}</h2>
+                  </div>
+                  <div class="log-body">
+                    <div class="log-section">
+                      <div class="log-section-label">📋 问题描述</div>
+                      <div class="log-content md-body"><Content /></div>
+                    </div>
+                    {
+                      log.data.solution && (
+                        <div class="log-section log-solution">
+                          <div class="log-section-label">💡 解决方案</div>
+                          <div class="log-content solution-content">{log.data.solution}</div>
+                        </div>
+                      )
+                    }
+                    {
+                      log.data.tags.length > 0 && (
+                        <div class="log-tags">
+                          {log.data.tags.map((tag) => (
+                            <span class="log-tag">{tag}</span>
+                          ))}
+                        </div>
+                      )
+                    }
+                    {
+                      log.data.relatedEntry && (
+                        <div class="log-related">
+                          📎 关联学习记录：<code>{log.data.relatedEntry}</code>
+                        </div>
+                      )
+                    }
+                  </div>
+                </article>
+              );
+            })
+          )
+        }
+      </div>
+
+      <div class="empty-search" id="logEmptySearch">
+        <div class="empty-icon">🔍</div>
+        <p>没有匹配的日志</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>记录问题 · 沉淀经验 · 持续进步 🚀</p>
+    </footer>
+  </div>
+</BaseLayout>
+
+<script>
+  import '../scripts/logs.js';
+</script>
+
+<style is:global>
+  .page-header {
+    padding: 3rem 0 1.5rem;
+    text-align: center;
+  }
+  .page-header h1 {
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
+  .page-desc {
+    color: var(--text-muted, #6b6560);
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+  }
+
+  /* --- Stats bar --- */
+  .stats-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  .stat {
+    flex: 1;
+    min-width: 80px;
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border, #e8e4df);
+    border-radius: 12px;
+    padding: 1rem 0.5rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  }
+  .stat-num {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent, #e07a5f);
+  }
+  .stat-label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-muted, #6b6560);
+    margin-top: 0.15rem;
+  }
+
+  /* --- Filter bar --- */
+  .filter-bar {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .filter-label {
+    font-size: 0.82rem;
+    color: var(--text-muted, #6b6560);
+    margin-right: 0.3rem;
+    min-width: 2.5rem;
+  }
+  .filter-btn {
+    background: var(--tag-bg, #f3ebe6);
+    color: var(--tag-text, #b85c3f);
+    border: none;
+    padding: 0.3rem 0.7rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: var(--accent, #e07a5f);
+    color: white;
+  }
+
+  /* --- Log entries --- */
+  .log-list {
+    position: relative;
+  }
+
+  .log-entry {
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border, #e8e4df);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .log-entry:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+
+  .log-header {
+    cursor: pointer;
+  }
+
+  .log-meta-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .log-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 8px;
+    letter-spacing: 0.02em;
+  }
+  .status-resolved { background: #e6f7e6; color: #2e7d32; }
+  .status-in-progress { background: #fff3e0; color: #e65100; }
+  .status-open { background: #fce4ec; color: #c62828; }
+
+  .log-severity {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 6px;
+  }
+  .severity-high { background: #fce4ec; color: #b71c1c; }
+  .severity-medium { background: #fff8e1; color: #f57f17; }
+  .severity-low { background: #e8f5e9; color: #388e3c; }
+
+  .log-date {
+    font-size: 0.78rem;
+    color: var(--text-muted, #6b6560);
+    margin-left: auto;
+  }
+
+  .log-toggle {
+    font-size: 0.75rem;
+    color: var(--text-muted, #6b6560);
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    background: var(--tag-bg, #f3ebe6);
+    transition: all 0.2s;
+  }
+  .log-entry.expanded .log-toggle {
+    background: var(--accent, #e07a5f);
+    color: white;
+  }
+
+  .log-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .log-body {
+    display: none;
+    margin-top: 1rem;
+    animation: fadeIn 0.25s ease;
+  }
+  .log-entry.expanded .log-body {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .log-section {
+    margin-bottom: 1rem;
+  }
+  .log-section-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-muted, #6b6560);
+    margin-bottom: 0.3rem;
+  }
+  .log-content {
+    font-size: 0.9rem;
+    color: var(--text, #2d2a26);
+    line-height: 1.7;
+  }
+
+  .log-solution {
+    background: linear-gradient(135deg, #f1f8f1, #eaf5ea);
+    border-left: 3px solid #4caf50;
+    padding: 0.8rem 1rem;
+    border-radius: 0 10px 10px 0;
+  }
+  .log-solution .log-section-label {
+    color: #2e7d32;
+  }
+
+  .solution-content {
+    white-space: pre-wrap;
+  }
+
+  .log-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+  }
+  .log-tag {
+    background: var(--tag-bg, #f3ebe6);
+    color: var(--tag-text, #b85c3f);
+    padding: 0.15rem 0.55rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+  }
+
+  .log-related {
+    font-size: 0.8rem;
+    color: var(--text-muted, #6b6560);
+    margin-top: 0.75rem;
+    padding-top: 0.6rem;
+    border-top: 1px dashed var(--border, #e8e4df);
+  }
+  .log-related code {
+    background: var(--tag-bg, #f3ebe6);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted, #6b6560);
+  }
+  .empty-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .empty-search {
+    display: none;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted, #6b6560);
+  }
+  .empty-search.visible {
+    display: block;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 3rem 0;
+    color: var(--text-muted, #6b6560);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border, #e8e4df);
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 600px) {
+    .page-header { padding: 2rem 0 1rem; }
+    .page-header h1 { font-size: 1.35rem; }
+    .stats-bar { gap: 0.3rem; }
+    .stat { padding: 0.75rem 0.3rem; }
+    .stat-num { font-size: 1.25rem; }
+    .log-entry { padding: 1rem; }
+    .log-title { font-size: 0.95rem; }
+  }
+</style>
