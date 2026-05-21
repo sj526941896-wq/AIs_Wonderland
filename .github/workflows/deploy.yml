@@ -39,3 +39,18 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: 发送飞书通知
+        if: github.ref == 'refs/heads/main'
+        run: |
+          MD_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '\.md$' | head -5)
+          if [ -n "$MD_FILES" ]; then
+            echo "检测到文章变更，发送飞书通知..."
+            curl -X POST "${{ secrets.FEISHU_WEBHOOK }}" \
+              -H "Content-Type: application/json" \
+              -d "{
+                \"msg_type\": \"text\",
+                \"content\": {
+                  \"text\": \"📝 新文章已发布\n链接: https://ais.aitennis.top/\n变更: \$MD_FILES\"
+                }
+              }"
+          fi
