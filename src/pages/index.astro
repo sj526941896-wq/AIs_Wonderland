@@ -78,8 +78,8 @@ function fmtDate(date) {
                       <div class="entry-share">
                         <button class="share-btn" data-title={entry.data.title} data-url={entry.id}>🔗 分享</button>
                         <div class="share-menu" id={`share-${entry.id}`}>
-                          <a class="share-item" href="#" onclick="return false;" data-platform="wechat">📱 微信</a>
-                          <a class="share-item" href="#" onclick="return false;" data-platform="xiaohongshu">📕 小红书</a>
+                          <a class="share-item" href="#" onclick="return false;" data-platform="copy">🔗 复制链接</a>
+                          <a class="share-item" href="#" onclick="return false;" data-platform="wechat">📱 朋友圈</a>
                         </div>
                       </div>
                     </div>
@@ -136,9 +136,18 @@ function fmtDate(date) {
       const url = window.location.href;
 
       const shareUrls = {
-        wechat: `https://wx.qq.com/`,
-        xiaohongshu: `https://creator.xiaohongshu.com/publish/publish?title=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`
+        copy: null,
+        wechat: `https://connect.qq.com/widget/shareqq/redirect.html?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`
       };
+
+      if (platform === 'copy') {
+        navigator.clipboard.writeText(url).then(() => {
+          btn.textContent = '✅ 已复制';
+          setTimeout(() => btn.textContent = '🔗 分享', 1500);
+        });
+        return;
+      }
+
       window.open(shareUrls[platform], '_blank');
     });
   });
