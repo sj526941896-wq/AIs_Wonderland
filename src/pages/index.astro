@@ -75,6 +75,13 @@ function fmtDate(date) {
                     <div class="entry-actions">
                       <span class="entry-views">👁 {entry.data.views}</span>
                       <button class="entry-like" data-id={entry.id}>❤️ {entry.data.likes || 0}</button>
+                      <div class="entry-share">
+                        <button class="share-btn" data-title={entry.data.title} data-url={entry.id}>🔗 分享</button>
+                        <div class="share-menu" id={`share-${entry.id}`}>
+                          <a class="share-item" href="#" onclick="return false;" data-platform="wechat">📱 微信</a>
+                          <a class="share-item" href="#" onclick="return false;" data-platform="xiaohongshu">📕 小红书</a>
+                        </div>
+                      </div>
                     </div>
                     {
                       entry.data.achievement && (
@@ -101,6 +108,40 @@ function fmtDate(date) {
 
 <script>
   import '../scripts/index.js';
+</script>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const shareBtn = e.target.closest('.share-btn');
+    if (shareBtn) {
+      e.stopPropagation();
+      const menu = shareBtn.nextElementSibling;
+      document.querySelectorAll('.share-menu.visible').forEach(m => {
+        if (m !== menu) m.classList.remove('visible');
+      });
+      menu.classList.toggle('visible');
+      return;
+    }
+    if (!e.target.closest('.entry-share')) {
+      document.querySelectorAll('.share-menu.visible').forEach(m => m.classList.remove('visible'));
+    }
+  });
+
+  document.querySelectorAll('.share-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const platform = item.dataset.platform;
+      const btn = item.closest('.entry-share').querySelector('.share-btn');
+      const title = btn.dataset.title;
+      const url = window.location.href;
+
+      const shareUrls = {
+        wechat: `https://wx.qq.com/`,
+        xiaohongshu: `https://creator.xiaohongshu.com/publish/publish?title=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`
+      };
+      window.open(shareUrls[platform], '_blank');
+    });
+  });
 </script>
 
 <style is:global>
@@ -398,6 +439,51 @@ function fmtDate(date) {
   }
   .entry-like.liked {
     color: #e07a5f;
+  }
+
+  .entry-share {
+    position: relative;
+  }
+  .share-btn {
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+  }
+  .share-btn:hover {
+    color: var(--accent);
+  }
+  .share-menu {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 0.5rem;
+    gap: 0.25rem;
+    z-index: 10;
+    white-space: nowrap;
+  }
+  .share-menu.visible {
+    display: flex;
+    flex-direction: column;
+  }
+  .share-item {
+    display: block;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .share-item:hover {
+    background: var(--tag-bg);
   }
 
   .entry-tags {
