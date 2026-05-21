@@ -21,7 +21,6 @@ const { title = 'AI 学习之旅', currentPage = 'entries' } = Astro.props;
         <a href="/" class="nav-logo">🏠 {title}</a>
         <div class="nav-links">
           <a href="/" class={`nav-link${currentPage === 'entries' ? ' active' : ''}`}>📖 学习记录</a>
-          <a href="/logs" class={`nav-link${currentPage === 'logs' ? ' active' : ''}`}>🔧 日志跟踪</a>
         </div>
       </div>
     </nav>

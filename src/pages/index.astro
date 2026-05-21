@@ -55,7 +55,7 @@ function fmtDate(date) {
             published.map(async (entry, i) => {
               const { Content } = await entry.render();
               return (
-                <article class="entry" data-index={i} data-title={entry.data.title} data-tags={entry.data.tags.join(',')}>
+                <article class="entry" data-index={i} data-title={entry.data.title} data-tags={entry.data.tags.join(',')} data-id={entry.id}>
                   <div class="entry-header">
                     <div class="entry-date">{fmtDate(entry.data.date)}</div>
                     <h2 class="entry-title">{entry.data.title}</h2>
@@ -72,6 +72,10 @@ function fmtDate(date) {
                         </div>
                       )
                     }
+                    <div class="entry-actions">
+                      <span class="entry-views">👁 {entry.data.views}</span>
+                      <button class="entry-like" data-id={entry.id}>❤️ {entry.data.likes || 0}</button>
+                    </div>
                     {
                       entry.data.achievement && (
                         <div class="entry-achievement">
@@ -354,6 +358,34 @@ function fmtDate(date) {
     border-radius: 8px;
     display: block;
     margin: 1rem auto;
+  }
+
+  .entry-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--border);
+  }
+
+  .entry-views,
+  .entry-like {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .entry-like {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.2s;
+  }
+  .entry-like:hover {
+    transform: scale(1.1);
+  }
+  .entry-like.liked {
+    color: #e07a5f;
   }
 
   .entry-tags {

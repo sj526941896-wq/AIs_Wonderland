@@ -7,6 +7,8 @@ const entries = defineCollection({
     date: z.date(),
     tags: z.array(z.string()).default([]),
     achievement: z.string().optional(),
+    views: z.number().default(0),
+    likes: z.number().default(0),
     draft: z.boolean().default(false),
   }),
 });
@@ -25,4 +27,4 @@ const logs = defineCollection({
   }),
 });
 
-export const collections = { entries, logs };
+export const collections = { entries };
