@@ -1,5 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ConsultPrice from '../../components/ConsultPrice.astro';
+import profile from '../../content/profile.json';
+
+const { consult } = profile;
 ---
 
 <BaseLayout title="交互教学 | 涂工网球" currentPage="learn">
@@ -32,7 +36,15 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     <section class="section" style="margin-top: 2.5rem;">
       <div class="card">
         <h3>学完仍有问题？</h3>
-        <p>教学专题解决「练什么」；个体动作差异建议预约诊断。</p>
+        <p>
+          教学专题解决「练什么」；个体动作差异建议预约诊断{' '}
+          <ConsultPrice
+            original={consult.skuPriceOriginal}
+            suffix={consult.skuPriceSuffix}
+            strikethrough={consult.skuPriceStrikethrough}
+            compact
+          />
+        </p>
         <a href="/consult/" class="btn btn-primary" style="margin-top: 0.75rem;">预约动作诊断</a>
       </div>
     </section>

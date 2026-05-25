@@ -3,15 +3,27 @@ interface Props {
   original: string;
   suffix?: string;
   strikethrough?: boolean;
+  /** 底部咨询栏、教学页 CTA 等行内展示 */
+  compact?: boolean;
 }
 
-const { original, suffix = '', strikethrough = false } = Astro.props;
+const { original, suffix = '', strikethrough = false, compact = false } = Astro.props;
+const amountClass = ['price-amount', strikethrough && 'price-original'].filter(Boolean);
 ---
 
-<p class="price-tag">
-  <span class:list={['price-amount', { 'price-original': strikethrough }]}>{original}</span>
-  {suffix && <span class="price-suffix">{suffix}</span>}
-</p>
+{
+  compact ? (
+    <span class="consult-price-inline">
+      <span class:list={amountClass}>{original}</span>
+      {suffix && <span class="price-suffix">{suffix}</span>}
+    </span>
+  ) : (
+    <p class="price-tag">
+      <span class:list={amountClass}>{original}</span>
+      {suffix && <span class="price-suffix">{suffix}</span>}
+    </p>
+  )
+}
 
 <style>
   .price-amount.price-original {
@@ -20,5 +32,12 @@ const { original, suffix = '', strikethrough = false } = Astro.props;
   }
   .price-suffix {
     margin-left: 0.25em;
+  }
+  .consult-price-inline {
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .consult-price-inline .price-amount {
+    font-weight: 700;
   }
 </style>

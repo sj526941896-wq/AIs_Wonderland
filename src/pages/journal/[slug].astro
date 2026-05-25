@@ -1,8 +1,12 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ConsultPrice from '../../components/ConsultPrice.astro';
+import profile from '../../content/profile.json';
 import { getCollection } from 'astro:content';
 import { getEntrySlug, entryPath } from '../../lib/entries';
 import '../../styles/entries.css';
+
+const { consult } = profile;
 
 export async function getStaticPaths() {
   const entries = await getCollection('entries', ({ data }) => !data.draft);
@@ -93,7 +97,15 @@ const consultFrom = `article-${slug}`;
       </div>
 
       <aside class="article-cta card">
-        <p>需要针对你的情况纠错或制定练法？</p>
+        <p>
+          需要针对你的情况纠错或制定练法？动作诊断{' '}
+          <ConsultPrice
+            original={consult.skuPriceOriginal}
+            suffix={consult.skuPriceSuffix}
+            strikethrough={consult.skuPriceStrikethrough}
+            compact
+          />
+        </p>
         <div class="hero-actions" style="justify-content: flex-start; margin-top: 0.75rem;">
           <a href={`/consult/?from=${consultFrom}`} class="btn btn-primary">预约动作诊断</a>
           <a href="/learn/forehand/" class="btn btn-secondary">交互教学 · 正手</a>

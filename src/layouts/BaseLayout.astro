@@ -1,5 +1,9 @@
 ---
 import '../styles/global.css';
+import ConsultPrice from '../components/ConsultPrice.astro';
+import profile from '../content/profile.json';
+
+const { consult } = profile;
 
 export interface Props {
   title?: string;
@@ -51,7 +55,16 @@ const siteName = '涂工网球';
           <div class="sticky-consult-inner">
             <div class="sticky-consult-text">
               <strong>预约咨询</strong>
-              动作诊断 · 飞书联系
+              <span class="sticky-consult-meta">
+                动作诊断{' '}
+                <ConsultPrice
+                  original={consult.skuPriceOriginal}
+                  suffix={consult.skuPriceSuffix}
+                  strikethrough={consult.skuPriceStrikethrough}
+                  compact
+                />
+                {' '}· 飞书联系
+              </span>
             </div>
             <a href="/consult/" class="btn btn-primary">立即咨询</a>
           </div>

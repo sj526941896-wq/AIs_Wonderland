@@ -1,5 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import ConsultPrice from '../../components/ConsultPrice.astro';
+import profile from '../../content/profile.json';
+
+const { consult } = profile;
 ---
 
 <BaseLayout title="正手动力链 · 交互教学 | 涂工网球" currentPage="learn">
@@ -36,7 +40,16 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         <li>对照动力链检查自己挥拍录像</li>
         <li>需要针对性纠错可预约诊断</li>
       </ul>
-      <a href="/consult/?from=learn-forehand" class="btn btn-primary" style="margin-top: 1rem;">预约动作诊断</a>
+      <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.92rem;">
+        动作诊断{' '}
+        <ConsultPrice
+          original={consult.skuPriceOriginal}
+          suffix={consult.skuPriceSuffix}
+          strikethrough={consult.skuPriceStrikethrough}
+          compact
+        />
+      </p>
+      <a href="/consult/?from=learn-forehand" class="btn btn-primary" style="margin-top: 0.75rem;">预约动作诊断</a>
     </section>
 
     <footer class="site-footer">
