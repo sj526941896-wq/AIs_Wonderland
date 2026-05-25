@@ -185,6 +185,24 @@
   border-radius: 8px;
   display: block;
   margin: 1rem auto;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.md-body img + em,
+.md-body p:has(+ em) {
+  display: block;
+}
+
+.md-body em:only-child,
+.md-body p em {
+  display: block;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: normal;
+  margin: -0.5rem auto 1.25rem;
+  max-width: 90%;
 }
 .md-body blockquote {
   border-left: 4px solid var(--accent);

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #faf9f7; font-family: -apple-system, 'Noto Sans SC', sans-serif; }
+    .scene {
+      width: 640px;
+      height: 360px;
+      background: #fff;
+      border: 1px solid #e8e4df;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+    }
+    .label-top {
+      position: absolute;
+      top: 12px;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 13px;
+      color: #6b6560;
+      letter-spacing: 0.12em;
+      z-index: 2;
+    }
+
+    /* Scene 1: P-D-E cycle */
+    #scene1 .ring {
+      position: absolute;
+      inset: 48px 80px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #scene1 .node {
+      position: absolute;
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-size: 15px;
+      font-weight: 700;
+      border: 2px solid #e8e4df;
+      background: #fff;
+      color: #2d2a26;
+    }
+    #scene1 .node span { font-size: 11px; font-weight: 500; color: #6b6560; margin-top: 2px; }
+    #scene1 .n1 { top: 0; left: 50%; transform: translateX(-50%); }
+    #scene1 .n2 { bottom: 20px; left: 8%; }
+    #scene1 .n3 { bottom: 20px; right: 8%; }
+    #scene1 .node.active {
+      border-color: #e07a5f;
+      background: #fdf8f6;
+      box-shadow: 0 0 24px rgba(224, 122, 95, 0.35);
+      animation: pulse 1.2s ease infinite;
+    }
+    #scene1 .arrow-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #scene1 .arrow-path {
+      fill: none;
+      stroke: #e07a5f;
+      stroke-width: 2.5;
+      stroke-dasharray: 8 6;
+      animation: dash 1.5s linear infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.06); }
+    }
+    #scene1 .n2.active, #scene1 .n3.active { animation: pulse2 1.2s ease infinite; }
+    @keyframes pulse2 {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    @keyframes dash { to { stroke-dashoffset: -28; } }
+    #scene1 .n1.active { animation-name: pulse; }
+    #scene1 .n2 { animation-delay: 0s; }
+    #scene1 .cycle-step1 .n1 { animation: pulse 1.2s ease; }
+    #scene1 .cycle-step2 .n2 { animation: pulse2 1.2s ease; }
+    #scene1 .cycle-step3 .n3 { animation: pulse2 1.2s ease; }
+
+    /* Scene 2: court moment */
+    #scene2 .court {
+      position: absolute;
+      left: 40px; right: 40px;
+      top: 70px; bottom: 50px;
+      background: #c45c30;
+      border-radius: 8px;
+      border: 2px solid #fff;
+    }
+    #scene2 .line {
+      position: absolute;
+      background: rgba(255,255,255,0.7);
+    }
+    #scene2 .net {
+      left: 50%; top: 0; bottom: 0;
+      width: 3px;
+      transform: translateX(-50%);
+      background: repeating-linear-gradient(0deg, #fff 0 6px, transparent 6px 12px);
+    }
+    #scene2 .service {
+      left: 50%; top: 72%;
+      width: 60%; height: 2px;
+      transform: translateX(-50%);
+    }
+    #scene2 .player {
+      position: absolute;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      font-size: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      color: #fff;
+    }
+    #scene2 .me { background: #e07a5f; top: 28%; left: 58%; animation: me-move 3s ease-in-out infinite; }
+    #scene2 .opp { background: #2d2a26; top: 55%; left: 42%; }
+    #scene2 .ball {
+      position: absolute;
+      width: 12px; height: 12px;
+      background: #d4f938;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(212,249,56,0.6);
+      animation: ball-short 3s ease-in-out infinite;
+    }
+    #scene2 .path-bad, #scene2 .path-good {
+      position: absolute;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 6px;
+      opacity: 0;
+    }
+    #scene2 .path-bad {
+      top: 18%; right: 12%;
+      background: #fee2e2;
+      color: #b91c1c;
+      animation: show-bad 3s ease-in-out infinite;
+    }
+    #scene2 .path-good {
+      top: 18%; left: 12%;
+      background: #dcfce7;
+      color: #15803d;
+      animation: show-good 3s ease-in-out infinite;
+    }
+    @keyframes me-move {
+      0%, 30% { transform: translate(0,0); }
+      50%, 100% { transform: translate(-12px, 8px); }
+    }
+    @keyframes ball-short {
+      0%, 25% { left: 45%; top: 68%; opacity: 1; }
+      35%, 55% { left: 52%; top: 58%; }
+      60%, 100% { left: 55%; top: 32%; opacity: 1; }
+    }
+    @keyframes show-bad {
+      0%, 45% { opacity: 0; }
+      55%, 75% { opacity: 1; }
+      85%, 100% { opacity: 0; }
+    }
+    @keyframes show-good {
+      0%, 25% { opacity: 1; }
+      35%, 55% { opacity: 0; }
+      60%, 100% { opacity: 0; }
+    }
+
+    /* Scene 3: A B C */
+    #scene3 .cols {
+      display: flex;
+      gap: 16px;
+      padding: 56px 24px 24px;
+      height: 100%;
+    }
+    #scene3 .col {
+      flex: 1;
+      border-radius: 12px;
+      border: 2px solid #e8e4df;
+      padding: 16px 12px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+    }
+    #scene3 .col .tag {
+      font-size: 22px;
+      font-weight: 800;
+      color: #e07a5f;
+    }
+    #scene3 .col .name { font-size: 14px; font-weight: 700; color: #2d2a26; }
+    #scene3 .col .desc { font-size: 11px; color: #6b6560; line-height: 1.5; }
+    #scene3 .col.a { animation: col-a 4.5s ease-in-out infinite; }
+    #scene3 .col.b { animation: col-b 4.5s ease-in-out infinite; }
+    #scene3 .col.c { animation: col-c 4.5s ease-in-out infinite; }
+    @keyframes col-a {
+      0%, 20% { border-color: #e07a5f; background: #fdf8f6; transform: scale(1.04); }
+      25%, 100% { border-color: #e8e4df; background: #fff; transform: scale(1); }
+    }
+    @keyframes col-b {
+      0%, 45% { border-color: #e8e4df; background: #fff; transform: scale(1); }
+      50%, 70% { border-color: #e07a5f; background: #fdf8f6; transform: scale(1.04); }
+      75%, 100% { border-color: #e8e4df; background: #fff; transform: scale(1); }
+    }
+    @keyframes col-c {
+      0%, 75% { border-color: #e8e4df; background: #fff; transform: scale(1); }
+      80%, 95% { border-color: #e07a5f; background: #fdf8f6; transform: scale(1.04); }
+      100% { border-color: #e8e4df; background: #fff; transform: scale(1); }
+    }
+
+    /* Cycle highlight rotation for scene1 */
+    #scene1 .n1, #scene1 .n2, #scene1 .n3 { transition: all 0.3s; }
+    #scene1 .highlight-1 .n1 { border-color: #e07a5f; background: #fdf8f6; box-shadow: 0 0 20px rgba(224,122,95,0.3); }
+    #scene1 .highlight-2 .n2 { border-color: #e07a5f; background: #fdf8f6; box-shadow: 0 0 20px rgba(224,122,95,0.3); }
+    #scene1 .highlight-3 .n3 { border-color: #e07a5f; background: #fdf8f6; box-shadow: 0 0 20px rgba(224,122,95,0.3); }
+    #scene1 .ring { animation: cycle-highlight 3.6s step-end infinite; }
+    @keyframes cycle-highlight {
+      0%, 33% { /* step 1 via class - use sibling */ }
+    }
+    #scene1 .step-indicator {
+      animation: step-rotate 3.6s step-end infinite;
+    }
+    @keyframes step-rotate {
+      0%, 30% { --step: 1; }
+      33%, 63% { --step: 2; }
+      66%, 96% { --step: 3; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="scene1" class="scene">
+  <div class="label-top">感知 → 决策 → 执行</div>
+  <div class="ring step-indicator" id="s1ring">
+    <svg class="arrow-svg" viewBox="0 0 400 220">
+      <path class="arrow-path" d="M200 50 Q80 120 70 170" />
+      <path class="arrow-path" d="M200 50 Q320 120 330 170" />
+      <path class="arrow-path" d="M90 175 Q200 200 310 175" opacity="0.5"/>
+    </svg>
+    <div class="node n1" id="sn1">感知<span>读取信息</span></div>
+    <div class="node n2" id="sn2">决策<span>选择拍法</span></div>
+    <div class="node n3" id="sn3">执行<span>身体输出</span></div>
+  </div>
+</div>
+
+<div id="scene2" class="scene" style="margin-top: 20px;">
+  <div class="label-top">上网机会球：放小球 vs 直接进攻</div>
+  <div class="court">
+    <div class="line net"></div>
+    <div class="line service"></div>
+    <div class="player opp">古</div>
+    <div class="player me">我</div>
+    <div class="ball"></div>
+  </div>
+  <div class="path-good">✓ 直接截击/进攻</div>
+  <div class="path-bad">✗ 放小球被反击</div>
+</div>
+
+<div id="scene3" class="scene" style="margin-top: 20px;">
+  <div class="label-top">三分失误，三种断点</div>
+  <div class="cols">
+    <div class="col a">
+      <div class="tag">A</div>
+      <div class="name">执行失败</div>
+      <div class="desc">决策对，动作没做到<br/>球下网、出界</div>
+    </div>
+    <div class="col b">
+      <div class="tag">B</div>
+      <div class="name">决策失败</div>
+      <div class="desc">动作完成了<br/>选择却是错的</div>
+    </div>
+    <div class="col c">
+      <div class="tag">C</div>
+      <div class="name">感知失败</div>
+      <div class="desc">误判来球<br/>启动晚了</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Rotate highlight on scene1 nodes
+  const nodes = ['sn1','sn2','sn3'];
+  let i = 0;
+  setInterval(() => {
+    nodes.forEach((id, idx) => {
+      const el = document.getElementById(id);
+      if (idx === i) {
+        el.style.borderColor = '#e07a5f';
+        el.style.background = '#fdf8f6';
+        el.style.boxShadow = '0 0 20px rgba(224,122,95,0.35)';
+        el.style.transform = idx === 0 ? 'translateX(-50%) scale(1.06)' : 'scale(1.06)';
+      } else {
+        el.style.borderColor = '#e8e4df';
+        el.style.background = '#fff';
+        el.style.boxShadow = 'none';
+        el.style.transform = idx === 0 ? 'translateX(-50%) scale(1)' : 'scale(1)';
+      }
+    });
+    i = (i + 1) % 3;
+  }, 1200);
+</script>
+</body>
+</html>
