@@ -1,0 +1,156 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { getEntrySlug, entryPath } from '../../lib/entries';
+import '../../styles/entries.css';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('entries', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { slug: getEntrySlug(entry) },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: import('astro:content').CollectionEntry<'entries'>;
+}
+
+const { entry } = Astro.props;
+const slug = getEntrySlug(entry);
+const { Content } = await entry.render();
+
+const site = 'https://ais.aitennis.top';
+const canonical = new URL(entryPath(slug), site).href;
+const description =
+  entry.data.description ??
+  `${entry.data.title} — 涂工网球资讯与教学笔记`;
+const ogImage = entry.data.ogImage
+  ? new URL(entry.data.ogImage, site).href
+  : new URL('/images/feishu-me.png', site).href;
+
+function fmtDate(date: Date) {
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+const consultFrom = `article-${slug}`;
+---
+
+<BaseLayout title={`${entry.data.title} | 涂工网球`} currentPage="journal">
+  <meta name="description" content={description} slot="head" />
+  <link rel="canonical" href={canonical} slot="head" />
+  <meta property="og:type" content="article" slot="head" />
+  <meta property="og:title" content={entry.data.title} slot="head" />
+  <meta property="og:description" content={description} slot="head" />
+  <meta property="og:url" content={canonical} slot="head" />
+  <meta property="og:image" content={ogImage} slot="head" />
+
+  <div class="container">
+    <nav class="article-breadcrumb">
+      <a href="/journal/">资讯</a>
+      <span>/</span>
+      <span>{entry.data.title}</span>
+    </nav>
+
+    <article
+      class="article-detail entry"
+      data-id={entry.id}
+      data-title={entry.data.title}
+      data-tags={entry.data.tags.join(',')}
+    >
+      <header class="article-detail-header">
+        <div class="entry-date">{fmtDate(entry.data.date)}</div>
+        <h1 class="article-detail-title">{entry.data.title}</h1>
+        {
+          entry.data.tags.length > 0 && (
+            <div class="entry-tags">
+              {entry.data.tags.map((tag) => (
+                <span class="entry-tag">{tag}</span>
+              ))}
+            </div>
+          )
+        }
+      </header>
+
+      <div class="entry-content md-body article-detail-body">
+        <Content />
+      </div>
+
+      {
+        entry.data.achievement && (
+          <div class="entry-achievement">
+            <div class="entry-achievement-label">成果与收获</div>
+            <div class="entry-achievement-content">{entry.data.achievement}</div>
+          </div>
+        )
+      }
+
+      <div class="entry-actions">
+        <span class="entry-views">👁 {entry.data.views}</span>
+        <button type="button" class="entry-like" data-id={entry.id}>
+          ❤️ {entry.data.likes || 0}
+        </button>
+      </div>
+
+      <aside class="article-cta card">
+        <p>需要针对你的情况纠错或制定练法？</p>
+        <div class="hero-actions" style="justify-content: flex-start; margin-top: 0.75rem;">
+          <a href={`/consult/?from=${consultFrom}`} class="btn btn-primary">预约动作诊断</a>
+          <a href="/learn/forehand/" class="btn btn-secondary">交互教学 · 正手</a>
+        </div>
+      </aside>
+    </article>
+
+    <footer class="site-footer">
+      <p><a href="/journal/">← 全部资讯</a></p>
+    </footer>
+  </div>
+</BaseLayout>
+
+<script>
+  import '../../scripts/article.js';
+</script>
+
+<style>
+  .article-breadcrumb {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding: 1.5rem 0 0.5rem;
+  }
+  .article-breadcrumb a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .article-breadcrumb span {
+    margin: 0 0.35rem;
+  }
+  .article-detail {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  }
+  .article-detail::before {
+    display: none;
+  }
+  .article-detail-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0.25rem 0 0.75rem;
+    line-height: 1.35;
+  }
+  .article-detail-body {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+  }
+  .article-cta {
+    margin-top: 1.5rem;
+  }
+  .article-cta p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+</style>

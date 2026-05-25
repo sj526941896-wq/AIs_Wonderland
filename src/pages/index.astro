@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import profile from '../content/profile.json';
+import { getEntrySlug, entryPath } from '../lib/entries';
 
 const entries = await getCollection('entries');
 const published = entries
@@ -61,8 +62,8 @@ function fmtDate(date: Date) {
       </h2>
       <div class="card-grid">
         {
-          published.map((entry) => (
-            <a href="/journal/" class="card entry-preview">
+            published.map((entry) => (
+            <a href={entryPath(getEntrySlug(entry))} class="card entry-preview">
               <p class="entry-preview-date">{fmtDate(entry.data.date)}</p>
               <p class="entry-preview-title">{entry.data.title}</p>
             </a>

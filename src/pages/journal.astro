@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { getEntrySlug, entryPath, getListDescription } from '../lib/entries';
 import '../styles/entries.css';
 
 const entries = await getCollection('entries');
@@ -32,15 +33,15 @@ function fmtDate(date: Date) {
 
     <section>
       <div class="filter-tags" id="filterTags">
-        <button class="filter-tag active" data-tag="">全部</button>
+        <button type="button" class="filter-tag active" data-tag="">全部</button>
         {allTags.map((tag) => (
-          <button class="filter-tag" data-tag={tag}>
+          <button type="button" class="filter-tag" data-tag={tag}>
             {tag}
           </button>
         ))}
       </div>
 
-      <div class="timeline" id="timeline">
+      <div class="journal-list" id="journalList">
         {
           published.length === 0 ? (
             <div class="empty-state">
@@ -48,54 +49,43 @@ function fmtDate(date: Date) {
               <p>还没有记录</p>
             </div>
           ) : (
-            published.map(async (entry, i) => {
-              const { Content } = await entry.render();
+            published.map((entry) => {
+              const slug = getEntrySlug(entry);
+              const excerpt = getListDescription(entry);
               return (
                 <article
-                  class="entry"
-                  data-index={i}
+                  class="journal-card entry"
                   data-title={entry.data.title}
                   data-tags={entry.data.tags.join(',')}
-                  data-id={entry.id}
+                  data-excerpt={excerpt}
                 >
-                  <div class="entry-header">
-                    <div class="entry-date">{fmtDate(entry.data.date)}</div>
-                    <h2 class="entry-title">{entry.data.title}</h2>
-                    <span class="entry-toggle">展开</span>
-                  </div>
-                  <div class="entry-body">
-                    <div class="entry-content md-body">
-                      <Content />
-                    </div>
-                    {
-                      entry.data.tags.length > 0 && (
-                        <div class="entry-tags">
-                          {entry.data.tags.map((tag) => (
-                            <span class="entry-tag">{tag}</span>
-                          ))}
-                        </div>
-                      )
-                    }
-                    <div class="entry-actions">
-                      <span class="entry-views">👁 {entry.data.views}</span>
-                      <button class="entry-like" data-id={entry.id}>
-                        ❤️ {entry.data.likes || 0}
-                      </button>
-                    </div>
-                    {
-                      entry.data.achievement && (
-                        <div class="entry-achievement">
-                          <div class="entry-achievement-label">✨ 成果与收获</div>
-                          <div class="entry-achievement-content">{entry.data.achievement}</div>
-                        </div>
-                      )
-                    }
-                  </div>
+                  <div class="entry-date">{fmtDate(entry.data.date)}</div>
+                  <h2 class="journal-card-title">
+                    <a href={entryPath(slug)}>{entry.data.title}</a>
+                  </h2>
+                  {excerpt && <p class="journal-card-excerpt">{excerpt}</p>}
+                  {
+                    entry.data.tags.length > 0 && (
+                      <div class="entry-tags">
+                        {entry.data.tags.map((tag) => (
+                          <span class="entry-tag">{tag}</span>
+                        ))}
+                      </div>
+                    )
+                  }
+                  <a href={entryPath(slug)} class="journal-read-more">
+                    阅读全文 →
+                  </a>
                 </article>
               );
             })
           )
         }
+      </div>
+
+      <div class="empty-search" id="emptySearch">
+        <div class="empty-icon">🔍</div>
+        <p>没有匹配的记录</p>
       </div>
     </section>
 
@@ -108,5 +98,63 @@ function fmtDate(date: Date) {
 </BaseLayout>
 
 <script>
-  import '../scripts/index.js';
+  import '../scripts/journal-list.js';
 </script>
+
+<style>
+  .journal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .journal-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .journal-card::before {
+    display: none;
+  }
+  .journal-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+  .journal-card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0.25rem 0 0.5rem;
+  }
+  .journal-card-title a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .journal-card-title a:hover {
+    color: var(--accent);
+  }
+  .journal-card-excerpt {
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.65;
+    margin-bottom: 0.75rem;
+  }
+  .journal-read-more {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .journal-read-more:hover {
+    text-decoration: underline;
+  }
+  .empty-search {
+    display: none;
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-muted);
+  }
+  .empty-search.visible {
+    display: block;
+  }
+</style>

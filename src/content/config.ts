@@ -15,6 +15,10 @@ const entries = defineCollection({
       .enum(['lesson', 'daily', 'case', 'viz', 'workflow'])
       .optional(),
     audience: z.enum(['student', 'fan', 'peer']).default('fan'),
+    // Frontmatter `slug` is Astro’s entry slug (`entry.slug`), not `entry.data.slug`.
+    slug: z.string().optional(),
+    description: z.string().optional(),
+    ogImage: z.string().optional(),
   }),
 });
 

@@ -10,6 +10,8 @@ contentType: lesson
 audience: student
 achievement: 上线第一篇滚动式交互教学（hyper-demo1）
 draft: false
+slug: forehand-power-lesson
+description: 滚动式交互教学摘要；完整动画在 /learn/forehand/
 ---
 
 # 职业正手的力量从哪里来？
