@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import profile from '../content/profile.json';
+
+const { consult } = profile;
+const consultUrl = '/consult/?from=site';
+---
+
+<BaseLayout title="预约咨询 | 涂工网球" currentPage="consult">
+  <div class="container">
+    <header class="page-header">
+      <h1>咨询基地</h1>
+      <p>公众号适合快速阅读；完整诊断与练法建议请在这里预约，飞书一对一沟通。</p>
+    </header>
+
+    <section class="consult-block card">
+      <h2>适合谁</h2>
+      <ul>
+        <li>业余进阶：正手、发球、步伐有一致性问题，需要结构化纠错</li>
+        <li>关注国际球员技术动态，希望转化为「自己能练」的训练要点</li>
+        <li>看过网球日报或教学专题，希望针对自身动作做定向诊断</li>
+      </ul>
+    </section>
+
+    <section class="consult-block card">
+      <h2>首个可预约服务</h2>
+      <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">{consult.skuTitle}</h3>
+      <p class="price-tag">{consult.skuPrice}</p>
+      <p>{consult.skuNote}</p>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.5rem;">
+        每周开放约 {consult.weeklySlots} 个名额，先到先得。
+      </p>
+      <a href="#feishu" class="btn btn-primary" style="margin-top: 1rem;">扫码预约</a>
+    </section>
+
+    <section class="consult-block card">
+      <h2>咨询方式</h2>
+      <ul>
+        <li><strong>线上</strong>：飞书文字 / 语音；可发送挥拍视频片段</li>
+        <li><strong>交付</strong>：关键问题点 + 优先练什么 + 避免什么（以沟通为准）</li>
+        <li><strong>深度课</strong>：可先诊断，再决定是否进入专题小课或包月陪跑</li>
+      </ul>
+    </section>
+
+    <section class="consult-block card">
+      <h2>流程</h2>
+      <ol>
+        <li>下方扫码添加飞书，备注「网球咨询」</li>
+        <li>简述水平、主要困扰（可附视频链接）</li>
+        <li>确认诊断档时间与交付形式</li>
+        <li>按反馈练 1–2 周，可选复评</li>
+      </ol>
+    </section>
+
+    <section class="consult-block card">
+      <h2>常见问题</h2>
+      <ul>
+        <li><strong>和公众号内容有什么区别？</strong> 公众号是资讯与引子；网站提供交互教学与一对一诊断。</li>
+        <li><strong>需要先上私教课吗？</strong> 不需要，诊断档可单独购买。</li>
+        <li><strong>回复要多久？</strong> 一般 48 小时内（忙时飞书会说明）。</li>
+        <li><strong>从公众号来的怎么说？</strong> 备注「公众号」即可，便于安排名额。</li>
+      </ul>
+    </section>
+
+    <section class="consult-block card">
+      <h2>信任背书</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">
+        可先免费浏览教学专题与网球资讯，再决定是否预约。
+      </p>
+      <div class="hero-actions" style="justify-content: flex-start;">
+        <a href="/learn/forehand/" class="btn btn-secondary">正手动力链 · 教学样板</a>
+        <a href="/journal/" class="btn btn-secondary">网球资讯归档</a>
+      </div>
+    </section>
+
+    <section class="consult-block card qr-block" id="feishu">
+      <h2>飞书联系</h2>
+      <img src="/images/feishu-me.png" alt="飞书二维码" class="qr-code" width="160" height="160" />
+      <p class="qr-label">扫码预约 · 备注「网球咨询」</p>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+        链接来源标记：<code>{consultUrl}</code>
+      </p>
+    </section>
+
+    <footer class="site-footer">
+      <p>涂工 · AI 网球教学与咨询</p>
+    </footer>
+  </div>
+</BaseLayout>

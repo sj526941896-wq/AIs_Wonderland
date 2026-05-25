@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="交互教学 | 涂工网球" currentPage="learn">
+  <div class="container">
+    <header class="page-header">
+      <h1>交互教学</h1>
+      <p>公众号无法呈现的滚动动画与动力链讲解，在网站完整开放。</p>
+    </header>
+
+    <div class="card-grid">
+      <a href="/learn/forehand/" class="card entry-preview" style="border-color: var(--accent);">
+        <p class="entry-preview-date">第一篇 · 已上线</p>
+        <p class="entry-preview-title">职业正手的力量从哪里来？</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
+          GSAP 滚动动画 · 轨迹 · 动力链 · 拍速对比
+        </p>
+      </a>
+
+      <div class="card" style="opacity: 0.75;">
+        <p class="entry-preview-date">筹备中</p>
+        <p class="entry-preview-title">发球 · 节奏与抛球</p>
+      </div>
+
+      <div class="card" style="opacity: 0.75;">
+        <p class="entry-preview-date">筹备中</p>
+        <p class="entry-preview-title">步伐 · 分腿垫步</p>
+      </div>
+    </div>
+
+    <section class="section" style="margin-top: 2.5rem;">
+      <div class="card">
+        <h3>学完仍有问题？</h3>
+        <p>教学专题解决「练什么」；个体动作差异建议预约诊断。</p>
+        <a href="/consult/" class="btn btn-primary" style="margin-top: 0.75rem;">预约动作诊断</a>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p><a href="/">返回首页</a></p>
+    </footer>
+  </div>
+</BaseLayout>

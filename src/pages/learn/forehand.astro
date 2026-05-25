@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="正手动力链 · 交互教学 | 涂工网球" currentPage="learn">
+  <div class="container">
+    <header class="page-header">
+      <p class="hero-badge" style="margin-bottom: 0.75rem;">第一篇 · 交互教学</p>
+      <h1>职业正手的力量从哪里来？</h1>
+      <p>
+        滚动式动态讲解：飞行轨迹、发力真相、动力链传递、拍头速度对比。网站完整版，公众号仅适合摘要引流。
+      </p>
+    </header>
+
+    <section class="card" style="text-align: center; padding: 2rem 1.5rem;">
+      <p style="margin-bottom: 1.25rem; color: var(--text-muted);">
+        点击下方进入全屏交互（建议手机竖屏、向下滚动体验）
+      </p>
+      <a href="/learn/forehand-power/" class="btn btn-primary" style="font-size: 1.05rem;">
+        进入交互教学 →
+      </a>
+    </section>
+
+    <section class="demo-embed-wrap card" style="padding: 0; overflow: hidden;">
+      <iframe
+        src="/learn/forehand-power/"
+        title="职业正手动力链交互教学"
+        class="demo-iframe"
+        loading="lazy"
+      ></iframe>
+    </section>
+
+    <section class="card section">
+      <h2 style="font-size: 1.1rem; margin-bottom: 0.75rem;">学完后</h2>
+      <ul style="margin-left: 1.25rem; color: var(--text-muted);">
+        <li>对照动力链检查自己挥拍录像</li>
+        <li>需要针对性纠错可预约诊断</li>
+      </ul>
+      <a href="/consult/?from=learn-forehand" class="btn btn-primary" style="margin-top: 1rem;">预约动作诊断</a>
+    </section>
+
+    <footer class="site-footer">
+      <p><a href="/learn/">← 全部教学专题</a></p>
+    </footer>
+  </div>
+</BaseLayout>
+
+<style>
+  .demo-embed-wrap {
+    margin-bottom: 2rem;
+  }
+  .demo-iframe {
+    width: 100%;
+    height: min(85vh, 720px);
+    border: none;
+    display: block;
+    background: #0a0f0f;
+  }
+  @media (max-width: 600px) {
+    .demo-iframe {
+      height: 70vh;
+    }
+  }
+</style>

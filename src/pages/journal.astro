@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import '../styles/entries.css';
+
+const entries = await getCollection('entries');
+const published = entries
+  .filter((e) => !e.data.draft)
+  .sort((a, b) => {
+    const d = b.data.date.valueOf() - a.data.date.valueOf();
+    return d !== 0 ? d : b.id.localeCompare(a.id);
+  });
+
+const allTags = [...new Set(published.flatMap((e) => e.data.tags))];
+
+function fmtDate(date: Date) {
+  return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+---
+
+<BaseLayout title="网球资讯与学习记录 | 涂工网球" currentPage="journal">
+  <div class="container">
+    <header class="page-header">
+      <h1>资讯与学习记录</h1>
+      <p>网球日报、工作流心得与技术笔记。深度教学请前往 <a href="/learn/">交互教学</a>。</p>
+    </header>
+
+    <section class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" class="search-input" placeholder="搜索记录..." />
+    </section>
+
+    <section>
+      <div class="filter-tags" id="filterTags">
+        <button class="filter-tag active" data-tag="">全部</button>
+        {allTags.map((tag) => (
+          <button class="filter-tag" data-tag={tag}>
+            {tag}
+          </button>
+        ))}
+      </div>
+
+      <div class="timeline" id="timeline">
+        {
+          published.length === 0 ? (
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <p>还没有记录</p>
+            </div>
+          ) : (
+            published.map(async (entry, i) => {
+              const { Content } = await entry.render();
+              return (
+                <article
+                  class="entry"
+                  data-index={i}
+                  data-title={entry.data.title}
+                  data-tags={entry.data.tags.join(',')}
+                  data-id={entry.id}
+                >
+                  <div class="entry-header">
+                    <div class="entry-date">{fmtDate(entry.data.date)}</div>
+                    <h2 class="entry-title">{entry.data.title}</h2>
+                    <span class="entry-toggle">展开</span>
+                  </div>
+                  <div class="entry-body">
+                    <div class="entry-content md-body">
+                      <Content />
+                    </div>
+                    {
+                      entry.data.tags.length > 0 && (
+                        <div class="entry-tags">
+                          {entry.data.tags.map((tag) => (
+                            <span class="entry-tag">{tag}</span>
+                          ))}
+                        </div>
+                      )
+                    }
+                    <div class="entry-actions">
+                      <span class="entry-views">👁 {entry.data.views}</span>
+                      <button class="entry-like" data-id={entry.id}>
+                        ❤️ {entry.data.likes || 0}
+                      </button>
+                    </div>
+                    {
+                      entry.data.achievement && (
+                        <div class="entry-achievement">
+                          <div class="entry-achievement-label">✨ 成果与收获</div>
+                          <div class="entry-achievement-content">{entry.data.achievement}</div>
+                        </div>
+                      )
+                    }
+                  </div>
+                </article>
+              );
+            })
+          )
+        }
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>
+        <a href="/consult/">预约咨询</a> · <a href="/">返回首页</a>
+      </p>
+    </footer>
+  </div>
+</BaseLayout>
+
+<script>
+  import '../scripts/index.js';
+</script>

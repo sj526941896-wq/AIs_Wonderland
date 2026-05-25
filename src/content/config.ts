@@ -10,6 +10,11 @@ const entries = defineCollection({
     views: z.number().default(0),
     likes: z.number().default(0),
     draft: z.boolean().default(false),
+    pillar: z.enum(['teach', 'media', 'ai-lab']).default('media'),
+    contentType: z
+      .enum(['lesson', 'daily', 'case', 'viz', 'workflow'])
+      .optional(),
+    audience: z.enum(['student', 'fan', 'peer']).default('fan'),
   }),
 });
 
