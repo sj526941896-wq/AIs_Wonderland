@@ -1,8 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ConsultPrice from '../components/ConsultPrice.astro';
 import { getCollection } from 'astro:content';
 import profile from '../content/profile.json';
 import { getEntrySlug, entryPath } from '../lib/entries';
+
+const { consult } = profile;
 
 const entries = await getCollection('entries');
 const published = entries
@@ -32,7 +35,11 @@ function fmtDate(date: Date) {
       <h2 class="section-title">咨询服务</h2>
       <div class="card">
         <h3>{profile.consult.skuTitle}</h3>
-        <p class="price-tag">{profile.consult.skuPrice}</p>
+        <ConsultPrice
+          original={consult.skuPriceOriginal}
+          suffix={consult.skuPriceSuffix}
+          strikethrough={consult.skuPriceStrikethrough}
+        />
         <p>{profile.consult.skuNote}</p>
         <a href="/consult/" class="btn btn-primary" style="margin-top: 1rem;">查看咨询基地 →</a>
       </div>

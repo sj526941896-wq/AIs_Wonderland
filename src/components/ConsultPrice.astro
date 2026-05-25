@@ -1,0 +1,24 @@
+---
+interface Props {
+  original: string;
+  suffix?: string;
+  strikethrough?: boolean;
+}
+
+const { original, suffix = '', strikethrough = false } = Astro.props;
+---
+
+<p class="price-tag">
+  <span class:list={['price-amount', { 'price-original': strikethrough }]}>{original}</span>
+  {suffix && <span class="price-suffix">{suffix}</span>}
+</p>
+
+<style>
+  .price-amount.price-original {
+    text-decoration: line-through;
+    opacity: 0.65;
+  }
+  .price-suffix {
+    margin-left: 0.25em;
+  }
+</style>

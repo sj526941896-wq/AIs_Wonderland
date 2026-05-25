@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ConsultPrice from '../components/ConsultPrice.astro';
 import profile from '../content/profile.json';
 
 const { consult } = profile;
@@ -25,7 +26,11 @@ const consultUrl = '/consult/?from=site';
     <section class="consult-block card">
       <h2>首个可预约服务</h2>
       <h3 style="font-size: 1.2rem; margin-bottom: 0.25rem;">{consult.skuTitle}</h3>
-      <p class="price-tag">{consult.skuPrice}</p>
+      <ConsultPrice
+        original={consult.skuPriceOriginal}
+        suffix={consult.skuPriceSuffix}
+        strikethrough={consult.skuPriceStrikethrough}
+      />
       <p>{consult.skuNote}</p>
       <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.5rem;">
         每周开放约 {consult.weeklySlots} 个名额，先到先得。

@@ -5,7 +5,9 @@
   "author": "涂工",
   "consult": {
     "skuTitle": "动作诊断 1 次",
-    "skuPrice": "¥199 起",
+    "skuPriceOriginal": "¥199",
+    "skuPriceSuffix": "起",
+    "skuPriceStrikethrough": true,
     "skuNote": "提交挥拍视频或文字描述，48 小时内反馈要点与练法建议（具体以飞书沟通为准）",
     "weeklySlots": 5
   }
